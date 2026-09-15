@@ -1,0 +1,1389 @@
+{
+  "data": {
+    "edges": [
+      {
+        "id": "business-demo-edge-1",
+        "source": "Webhook-MTKSD",
+        "target": "LanguageModelComponent-Yrot1",
+        "type": "default",
+        "animated": true,
+        "className": "",
+        "selected": false
+      },
+      {
+        "id": "business-demo-edge-2",
+        "source": "LanguageModelComponent-Yrot1",
+        "target": "CustomComponent-uy4bF",
+        "type": "default",
+        "animated": true,
+        "className": "",
+        "selected": false
+      },
+      {
+        "id": "business-demo-edge-3",
+        "source": "CustomComponent-uy4bF",
+        "target": "CustomComponent-46KIY",
+        "type": "default",
+        "animated": true,
+        "className": "",
+        "selected": false
+      },
+      {
+        "id": "business-demo-edge-4",
+        "source": "CustomComponent-46KIY",
+        "target": "CustomComponent-DemoSendOutcome",
+        "type": "default",
+        "animated": true,
+        "className": "",
+        "selected": false,
+        "sourceHandle": "{œdataTypeœ:œWebappReviewPOSTœ,œidœ:œCustomComponent-46KIYœ,œnameœ:œresponseœ,œoutput_typesœ:[œJSONœ]}",
+        "targetHandle": "{œfieldNameœ:œreview_resultœ,œidœ:œCustomComponent-DemoSendOutcomeœ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "data": {
+          "sourceHandle": {
+            "dataType": "WebappReviewPOST",
+            "id": "CustomComponent-46KIY",
+            "name": "response",
+            "output_types": [
+              "JSON"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "review_result",
+            "id": "CustomComponent-DemoSendOutcome",
+            "inputTypes": [
+              "Data",
+              "JSON"
+            ],
+            "type": "other"
+          }
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "data": {
+          "id": "Webhook-MTKSD",
+          "node": {
+            "base_classes": [
+              "JSON"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "display_name": "1. Customer Email Received",
+            "documentation": "https://docs.langflow.org/component-webhook",
+            "edited": true,
+            "field_order": [
+              "data",
+              "curl",
+              "endpoint"
+            ],
+            "frozen": false,
+            "icon": "webhook",
+            "legacy": false,
+            "lf_version": "0.11.0",
+            "metadata": {
+              "code_hash": "6fb8aecc6015",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.11.0"
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "custom_components.webhook"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "JSON",
+                "group_outputs": false,
+                "hidden": null,
+                "loop_types": null,
+                "method": "build_data",
+                "name": "output_data",
+                "options": null,
+                "required_inputs": null,
+                "selected": "JSON",
+                "tool_mode": true,
+                "types": [
+                  "JSON"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "import json\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MultilineInput, Output\nfrom lfx.schema.data import Data\n\n\nclass WebhookComponent(Component):\n    display_name = \"Webhook\"\n    documentation: str = \"https://docs.langflow.org/component-webhook\"\n    name = \"Webhook\"\n    icon = \"webhook\"\n\n    inputs = [\n        MultilineInput(\n            name=\"data\", display_name=\"Payload\",\n            info=\"Receives a payload from external systems via HTTP POST.\",\n            advanced=True,\n        ),\n        MultilineInput(\n            name=\"curl\", display_name=\"cURL\", value=\"CURL_WEBHOOK\",\n            advanced=True, input_types=[],\n        ),\n        MultilineInput(\n            name=\"endpoint\", display_name=\"Endpoint\", value=\"BACKEND_URL\",\n            advanced=False, copy_field=True, input_types=[],\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"JSON\", name=\"output_data\", method=\"build_data\"),\n    ]\n\n    def build_data(self) -> Data:\n        if not self.data:\n            self.status = \"No data provided.\"\n            return Data(data={})\n        try:\n            # Permit literal control characters inside JSON strings, including\n            # multiline email previews. Do not rewrite or remove email text.\n            body = json.loads(self.data, strict=False)\n        except json.JSONDecodeError as exc:\n            self.status = \"Invalid JSON payload.\"\n            raise ValueError(\n                f\"Webhook payload is invalid JSON at line {exc.lineno}, \"\n                f\"column {exc.colno}: {exc.msg}\"\n            ) from exc\n        if not isinstance(body, dict):\n            raise ValueError(\"Webhook payload must be a JSON object.\")\n        data = Data(data=body)\n        self.status = data\n        return data\n"
+              },
+              "curl": {
+                "_input_type": "MultilineInput",
+                "advanced": true,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "cURL",
+                "dynamic": false,
+                "info": "",
+                "input_types": [],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "curl",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "CURL_WEBHOOK"
+              },
+              "data": {
+                "_input_type": "MultilineInput",
+                "advanced": true,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Payload",
+                "dynamic": false,
+                "info": "Receives a payload from external systems via HTTP POST.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "data",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "endpoint": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": true,
+                "display_name": "Endpoint",
+                "dynamic": false,
+                "info": "",
+                "input_types": [],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "endpoint",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "BACKEND_URL"
+              }
+            },
+            "tool_mode": false,
+            "description": "A new customer email starts the service process automatically."
+          },
+          "showNode": true,
+          "type": "Webhook"
+        },
+        "dragging": false,
+        "id": "Webhook-MTKSD",
+        "measured": {
+          "height": 203,
+          "width": 320
+        },
+        "position": {
+          "x": 0,
+          "y": 300
+        },
+        "selected": false,
+        "type": "genericNode"
+      },
+      {
+        "data": {
+          "_connectionMode": false,
+          "id": "LanguageModelComponent-Yrot1",
+          "node": {
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "AI checks relevance, understands the customer's need and identifies the referenced customer, loan or transaction.",
+            "display_name": "2. Understand the Request",
+            "documentation": "https://docs.langflow.org/components-models",
+            "edited": true,
+            "field_order": [
+              "model",
+              "model_name",
+              "provider",
+              "api_key",
+              "base_url_ibm_watsonx",
+              "project_id",
+              "ollama_base_url",
+              "input_value",
+              "system_message",
+              "stream",
+              "temperature",
+              "max_tokens"
+            ],
+            "frozen": false,
+            "icon": "brain-circuit",
+            "last_updated": "2026-09-11T06:05:52.380Z",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "6bcd5b7dc173",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.11.0"
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "custom_components.email_intent_check_llm"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Model Response",
+                "group_outputs": false,
+                "hidden": null,
+                "loop_types": null,
+                "method": "text_response",
+                "name": "text_output",
+                "options": null,
+                "required_inputs": null,
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              },
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Language Model",
+                "group_outputs": false,
+                "hidden": null,
+                "loop_types": null,
+                "method": "build_model",
+                "name": "model_output",
+                "options": null,
+                "required_inputs": null,
+                "selected": "LanguageModel",
+                "tool_mode": true,
+                "types": [
+                  "LanguageModel"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_frontend_node_flow_id": {
+                "value": "69472e87-4c4f-4210-905d-052a61156914"
+              },
+              "_frontend_node_folder_id": {
+                "value": "6bef6451-1eba-4bce-8f88-c803616dad50"
+              },
+              "_type": "Component",
+              "api_key": {
+                "_input_type": "SecretStrInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "API Key",
+                "dynamic": false,
+                "info": "Overrides global provider settings. Leave blank to use your pre-configured API Key.",
+                "input_types": [],
+                "load_from_db": true,
+                "name": "api_key",
+                "override_skip": false,
+                "password": true,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AZURE_AI_FOUNDRY_API_KEY"
+              },
+              "base_url_ibm_watsonx": {
+                "_input_type": "DropdownInput",
+                "advanced": false,
+                "api_editable": false,
+                "combobox": true,
+                "dialog_inputs": {},
+                "display_name": "watsonx API Endpoint",
+                "dynamic": false,
+                "external_options": {},
+                "info": "The base URL of the API (IBM watsonx.ai only)",
+                "name": "base_url_ibm_watsonx",
+                "options": [
+                  "https://us-south.ml.cloud.ibm.com",
+                  "https://eu-de.ml.cloud.ibm.com",
+                  "https://eu-gb.ml.cloud.ibm.com",
+                  "https://au-syd.ml.cloud.ibm.com",
+                  "https://jp-tok.ml.cloud.ibm.com",
+                  "https://ca-tor.ml.cloud.ibm.com"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "https://us-south.ml.cloud.ibm.com"
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from lfx.base.models.model import LCModelComponent\nfrom lfx.base.models.unified_models import (\n    get_language_model_options,\n    get_llm,\n    handle_model_input_update,\n)\nfrom lfx.base.models.watsonx_constants import IBM_WATSONX_URLS\nfrom lfx.components.models_and_agents.model_selection import apply_model_overrides\nfrom lfx.field_typing.constants import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, StrInput\nfrom lfx.io import IntInput, MessageInput, ModelInput, MultilineInput, SecretStrInput, SliderInput\n\n\nclass LanguageModelComponent(LCModelComponent):\n    display_name = \"Email Intent Check LLM\"\n    description = \"Runs a language model given a specified provider.\"\n    documentation: str = \"https://docs.langflow.org/components-models\"\n    icon = \"brain-circuit\"\n    category = \"models\"\n\n    inputs = [\n        ModelInput(\n            name=\"model\",\n            display_name=\"Language Model\",\n            info=\"Select your model provider\",\n            real_time_refresh=True,\n            required=True,\n        ),\n        StrInput(\n            name=\"model_name\",\n            display_name=\"Model Name Override\",\n            info=(\n                \"Optional model name to use instead of the selected model. \"\n                \"Can be set from a global variable for runtime model selection.\"\n            ),\n            advanced=True,\n            load_from_db=False,\n        ),\n        StrInput(\n            name=\"provider\",\n            display_name=\"Provider Override\",\n            info=(\n                \"Optional provider to use with Model Name Override. Leave blank to use the selected model's provider.\"\n            ),\n            advanced=True,\n            load_from_db=False,\n        ),\n        SecretStrInput(\n            name=\"api_key\",\n            display_name=\"API Key\",\n            info=\"Overrides global provider settings. Leave blank to use your pre-configured API Key.\",\n            required=False,\n            show=True,\n            real_time_refresh=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"base_url_ibm_watsonx\",\n            display_name=\"watsonx API Endpoint\",\n            info=\"The base URL of the API (IBM watsonx.ai only)\",\n            options=IBM_WATSONX_URLS,\n            value=IBM_WATSONX_URLS[0],\n            combobox=True,\n            show=False,\n            real_time_refresh=True,\n        ),\n        StrInput(\n            name=\"project_id\",\n            display_name=\"watsonx Project ID\",\n            info=\"The project ID associated with the foundation model (IBM watsonx.ai only)\",\n            show=False,\n            required=False,\n        ),\n        StrInput(\n            name=\"ollama_base_url\",\n            display_name=\"Ollama API URL\",\n            info=\"Endpoint of the Ollama API (Ollama only)\",\n            show=False,\n            real_time_refresh=True,\n        ),\n        MessageInput(\n            name=\"input_value\",\n            display_name=\"Input\",\n            info=\"The input text to send to the model\",\n        ),\n        MultilineInput(\n            name=\"system_message\",\n            display_name=\"System Message\",\n            info=\"A system message that helps set the behavior of the assistant\",\n            advanced=False,\n        ),\n        BoolInput(\n            name=\"stream\",\n            display_name=\"Stream\",\n            info=\"Whether to stream the response\",\n            value=False,\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Controls randomness in responses\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Tokens\",\n            info=\"Maximum number of tokens to generate. Field name varies by provider.\",\n            advanced=True,\n            range_spec=RangeSpec(min=1, max=128000, step=1, step_type=\"int\"),\n        ),\n    ]\n\n    def build_model(self) -> LanguageModel:\n        model = apply_model_overrides(\n            self.model,\n            model_name=getattr(self, \"model_name\", None),\n            provider=getattr(self, \"provider\", None),\n            user_id=self.user_id,\n            get_options=get_language_model_options,\n        )\n        return get_llm(\n            model=model,\n            user_id=self.user_id,\n            api_key=self.api_key,\n            temperature=self.temperature,\n            stream=self.stream,\n            max_tokens=getattr(self, \"max_tokens\", None),\n            watsonx_url=getattr(self, \"base_url_ibm_watsonx\", None),\n            watsonx_project_id=getattr(self, \"project_id\", None),\n            ollama_base_url=getattr(self, \"ollama_base_url\", None),\n        )\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        \"\"\"Dynamically update build config with user-filtered model options.\"\"\"\n        return handle_model_input_update(self, build_config, field_value, field_name)\n"
+              },
+              "input_value": {
+                "_input_type": "MessageInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Input",
+                "dynamic": false,
+                "info": "The input text to send to the model",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "is_refresh": true,
+              "max_tokens": {
+                "_input_type": "IntInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Max Tokens",
+                "dynamic": false,
+                "info": "Maximum number of tokens to generate. Field name varies by provider.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "max_tokens",
+                "override_skip": false,
+                "placeholder": "",
+                "range_spec": {
+                  "max": 128000,
+                  "min": 1,
+                  "step": 1,
+                  "step_type": "int"
+                },
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "int",
+                "value": 0
+              },
+              "model": {
+                "_input_type": "ModelInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Language Model",
+                "dynamic": false,
+                "external_options": {
+                  "fields": {
+                    "data": {
+                      "node": {
+                        "display_name": "Connect other models",
+                        "icon": "CornerDownLeft",
+                        "name": "connect_other_models"
+                      }
+                    }
+                  }
+                },
+                "info": "Select your model provider",
+                "input_types": [
+                  "LanguageModel"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "model_type": "language",
+                "name": "model",
+                "options": [
+                  {
+                    "category": "Azure AI Foundry",
+                    "icon": "Azure",
+                    "metadata": {
+                      "api_key_param": "credential",
+                      "context_length": 128000,
+                      "max_tokens_field_name": "max_tokens",
+                      "model_class": "AzureAIOpenAIApiChatModel",
+                      "model_name_param": "model"
+                    },
+                    "name": "gpt-4.1",
+                    "provider": "Azure AI Foundry"
+                  },
+                  {
+                    "category": "Azure AI Foundry",
+                    "icon": "Azure",
+                    "metadata": {
+                      "api_key_param": "credential",
+                      "context_length": 128000,
+                      "max_tokens_field_name": "max_tokens",
+                      "model_class": "AzureAIOpenAIApiChatModel",
+                      "model_name_param": "model"
+                    },
+                    "name": "gpt-5.5",
+                    "provider": "Azure AI Foundry"
+                  }
+                ],
+                "override_skip": false,
+                "placeholder": "Setup Provider",
+                "real_time_refresh": true,
+                "refresh_button": true,
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "model",
+                "value": [
+                  {
+                    "icon": "Azure",
+                    "metadata": {
+                      "api_key_param": "credential",
+                      "context_length": 128000,
+                      "max_tokens_field_name": "max_tokens",
+                      "model_class": "AzureAIOpenAIApiChatModel",
+                      "model_name_param": "model"
+                    },
+                    "name": "gpt-5.5",
+                    "provider": "Azure AI Foundry"
+                  }
+                ]
+              },
+              "model_name": {
+                "_input_type": "StrInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Model Name Override",
+                "dynamic": false,
+                "info": "Optional model name to use instead of the selected model. Can be set from a global variable for runtime model selection.",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "model_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "ollama_base_url": {
+                "_input_type": "StrInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Ollama API URL",
+                "dynamic": false,
+                "info": "Endpoint of the Ollama API (Ollama only)",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "ollama_base_url",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "project_id": {
+                "_input_type": "StrInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "watsonx Project ID",
+                "dynamic": false,
+                "info": "The project ID associated with the foundation model (IBM watsonx.ai only)",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "project_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "provider": {
+                "_input_type": "StrInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Provider Override",
+                "dynamic": false,
+                "info": "Optional provider to use with Model Name Override. Leave blank to use the selected model's provider.",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "provider",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "stream": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Stream",
+                "dynamic": false,
+                "info": "Whether to stream the response",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "stream",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "system_message": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "System Message",
+                "dynamic": false,
+                "info": "A system message that helps set the behavior of the assistant",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "system_message",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "# Role\n\nYou are an AI Email Understanding Agent for an NBFC customer-support workflow.\n\nYou receive:\n- `current_email`\n- `thread`\n- `thread_metadata`\n\nThread messages may have these directions:\n- `INBOUND`\n- `OUTBOUND_SUPPORT`\n- `CURRENT_INBOUND`\n\nYour job is to:\n1. Understand the customer's current business intent.\n2. Identify unresolved requests or questions.\n3. Assess tone, urgency, and escalation need.\n4. Extract identifiers explicitly mentioned in the thread.\n\nDo not answer the customer.\nDo not retrieve external information.\nDo not invent or infer missing facts or identifiers.\n\n# Output\n\nReturn only valid JSON in this exact structure:\n\n{\n  \"primary_intent\": \"\",\n  \"secondary_intents\": [],\n  \"latest_customer_request\": \"\",\n  \"unresolved_questions\": [],\n  \"tone\": \"\",\n  \"urgency\": \"\",\n  \"escalation_required\": false,\n  \"identifiers\": {\n    \"customer_id\": null,\n    \"loan_id\": null,\n    \"application_id\": null,\n    \"transaction_reference\": null,\n    \"other_identifiers\": []\n  },\n  \"identifier_conflicts\": [],\n  \"reason\": \"\"\n}\n\n# Intent Rules\n\n- Give highest priority to `CURRENT_INBOUND`.\n- Use the full thread to understand short or context-dependent follow-ups.\n- Identify the underlying business issue, not generic labels such as \"follow-up\" or \"update\".\n- `primary_intent` must be a concise uppercase business intent.\n- `secondary_intents` should contain only additional active requests.\n- `latest_customer_request` should describe what the customer currently wants in one concise sentence.\n- `unresolved_questions` should contain only issues that remain unresolved after considering both customer and support messages.\n- A support acknowledgement or promise is not a resolution unless the actual issue was resolved.\n\n# Tone and Urgency\n\n`tone` must be one of:\n- `NEUTRAL`\n- `POLITE`\n- `CONCERNED`\n- `FRUSTRATED`\n- `ANGRY`\n\n`urgency` must be one of:\n- `LOW`\n- `NORMAL`\n- `HIGH`\n- `CRITICAL`\n\nAssess tone primarily from `CURRENT_INBOUND`, using the thread as context.\n\nSet `escalation_required` to `true` when there are repeated unresolved follow-ups, strong dissatisfaction, missed support commitments, explicit escalation requests, or another clear reason for human attention.\n\nDo not mark something `CRITICAL` based only on an angry tone.\n\n# Identifier Extraction\n\nExtract identifiers from the full thread only when explicitly present.\n\nSupported fields:\n- `customer_id`\n- `loan_id`\n- `application_id`\n- `transaction_reference`\n\nUse `other_identifiers` only for relevant identifiers that do not fit these fields:\n\n{\n  \"type\": \"\",\n  \"value\": \"\"\n}\n\n### Identifier precedence:\n- Consider the chronological thread context.\n- If an earlier identifier was explicitly rejected, corrected, replaced, or superseded\n  later in the thread, use the latest explicitly supplied replacement value.\n- Do NOT treat superseded identifiers as conflicts.\n- Use identifier_conflicts only when multiple values remain simultaneously unresolved and there is no clear correction or replacement in the conversation.\n\n## Mapping Rules\n\n- `customer_id`: customer ID, customer number, customer code, cust ID, or \"my ID\" when referring to the customer's identity/account.\n- `loan_id`: loan ID, loan number, loan account number.\n- `application_id`: application ID, application number.\n- `transaction_reference`: transaction ID, transaction number, transaction reference, txn ID, txn ref, payment reference, payment ID, UTR, or bank reference.\n\nPrefer the explicit label used by the customer over contextual inference.\n\nDo not guess, reconstruct, or infer identifiers.\n\nIf the same identifier appears repeatedly with the same value, return it once.\n\nIf conflicting values appear for the same identifier type:\n- return `null` for that field\n- record the conflict as:\n\n{\n  \"type\": \"\",\n  \"values\": []\n}\n\nDo not extract the customer's email address from message body text. Sender email is handled separately from trusted metadata.\n\n# General Rules\n\n- Use thread context only to interpret the current issue.\n- Do not treat quoted or repeated historical text as a new request.\n- Do not invent missing history.\n- Keep all text fields concise.\n- Return only the JSON object with no markdown, commentary, or code fences."
+              },
+              "temperature": {
+                "_input_type": "SliderInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Temperature",
+                "dynamic": false,
+                "info": "Controls randomness in responses",
+                "max_label": "",
+                "max_label_icon": "",
+                "min_label": "",
+                "min_label_icon": "",
+                "name": "temperature",
+                "override_skip": false,
+                "placeholder": "",
+                "range_spec": {
+                  "max": 1,
+                  "min": 0,
+                  "step": 0.01,
+                  "step_type": "float"
+                },
+                "required": false,
+                "show": true,
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "title_case": false,
+                "tool_mode": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "value": 0.1
+              }
+            },
+            "tool_mode": false
+          },
+          "selected_output": "text_output",
+          "showNode": true,
+          "type": "LanguageModelComponent"
+        },
+        "dragging": false,
+        "id": "LanguageModelComponent-Yrot1",
+        "measured": {
+          "height": 372,
+          "width": 320
+        },
+        "position": {
+          "x": 430,
+          "y": 300
+        },
+        "selected": false,
+        "type": "genericNode"
+      },
+      {
+        "data": {
+          "id": "CustomComponent-uy4bF",
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Relevant conversation context and business records are checked before an evidence-based response is prepared.",
+            "display_name": "3. Verify Records & Prepare Response",
+            "documentation": "",
+            "edited": true,
+            "field_order": [
+              "email_data",
+              "session_id",
+              "mcp_url",
+              "mcp_api_key",
+              "extra_params",
+              "timeout"
+            ],
+            "frozen": false,
+            "icon": "Bot",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "7ab453dd19fe",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "fastmcp",
+                    "version": "3.4.7"
+                  },
+                  {
+                    "name": "langflow",
+                    "version": "0.11.0"
+                  }
+                ],
+                "total_dependencies": 2
+              },
+              "module": "custom_components.direct_intugle_mcp_caller"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Intugle Evidence",
+                "group_outputs": false,
+                "hidden": null,
+                "loop_types": null,
+                "method": "call_intugle",
+                "name": "evidence",
+                "options": null,
+                "required_inputs": null,
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from __future__ import annotations\n\nimport json\nfrom typing import Any\n\nfrom fastmcp import Client\nfrom fastmcp.client.transports import StreamableHttpTransport\nfrom langflow.custom import Component\nfrom langflow.io import (\n    DataInput,\n    IntInput,\n    MessageTextInput,\n    Output,\n    SecretStrInput,\n    StrInput,\n)\nfrom langflow.schema import Message\n\n\nclass DirectIntugleMCPCaller(Component):\n    display_name = \"Direct Intugle MCP Caller\"\n    description = (\n        \"Calls IntugleAgent directly using a persistent session ID \"\n        \"and returns the response for downstream processing.\"\n    )\n    icon = \"Bot\"\n    name = \"DirectIntugleMCPCaller\"\n\n    inputs = [\n        DataInput(\n            name=\"email_data\",\n            display_name=\"Current Email\",\n            required=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            required=True,\n        ),\n        StrInput(\n            name=\"mcp_url\",\n            display_name=\"MCP URL\",\n            value=\"https://app.intugle.ai/mcp\",\n            required=True,\n        ),\n        SecretStrInput(\n            name=\"mcp_api_key\",\n            display_name=\"MCP API Key\",\n            required=True,\n        ),\n        StrInput(\n            name=\"extra_params\",\n            display_name=\"x-extra-params\",\n            value=\"\",\n            required=False,\n            advanced=True,\n        ),\n        IntInput(\n            name=\"timeout\",\n            display_name=\"Timeout Seconds\",\n            value=300,\n            required=True,\n        ),\n    ]\n\n    outputs = [\n        Output(\n            name=\"evidence\",\n            display_name=\"Intugle Evidence\",\n            method=\"call_intugle\",\n        ),\n    ]\n\n    async def call_intugle(self) -> Message:\n        raw_result, answer = await self._get_result()\n\n        if self._is_error(raw_result):\n            raise ValueError(\n                answer\n                or \"IntugleAgent returned an MCP tool error.\"\n            )\n\n        if not answer:\n            raise ValueError(\n                \"IntugleAgent returned an empty response.\"\n            )\n\n        return Message(\n            text=answer,\n            sender=\"Machine\",\n            sender_name=\"IntugleAgent\",\n        )\n\n    async def _get_result(\n        self,\n    ) -> tuple[dict[str, Any], str]:\n\n        question = self._normalise_email_data(\n            self.email_data\n        )\n\n        if not question:\n            raise ValueError(\n                \"Current Email cannot be empty.\"\n            )\n\n        session_id = self._normalise_text(\n            self.session_id\n        )\n\n        if not session_id:\n            raise ValueError(\n                \"Session ID cannot be empty.\"\n            )\n\n        mcp_url = str(\n            self.mcp_url or \"\"\n        ).strip()\n\n        if not mcp_url:\n            raise ValueError(\n                \"MCP URL is required.\"\n            )\n\n        api_key = self._normalise_secret(\n            self.mcp_api_key\n        )\n\n        if not api_key:\n            raise ValueError(\n                \"MCP API key is required.\"\n            )\n\n        extra_params = str(\n            self.extra_params or \"\"\n        ).strip()\n\n        cache_key = (\n            question,\n            session_id,\n            mcp_url,\n            extra_params,\n            int(self.timeout),\n        )\n\n        if (\n            getattr(\n                self,\n                \"_cached_request_key\",\n                None,\n            )\n            == cache_key\n            and hasattr(\n                self,\n                \"_cached_raw_result\",\n            )\n        ):\n            return (\n                self._cached_raw_result,\n                self._cached_answer,\n            )\n\n        headers: dict[str, str] = {\n            \"Authorization\": f\"Bearer {api_key}\",\n            \"x-session-id\": session_id,\n        }\n\n        if (\n            extra_params\n            and extra_params != \"{}\"\n        ):\n            try:\n                parsed_extra_params = json.loads(\n                    extra_params\n                )\n\n            except json.JSONDecodeError as exc:\n                raise ValueError(\n                    \"x-extra-params must be valid JSON.\"\n                ) from exc\n\n            if parsed_extra_params:\n                headers[\n                    \"x-extra-params\"\n                ] = json.dumps(\n                    parsed_extra_params,\n                    ensure_ascii=False,\n                    separators=(\",\", \":\"),\n                )\n\n        transport = StreamableHttpTransport(\n            url=mcp_url,\n            headers=headers,\n        )\n\n        try:\n            async with Client(\n                transport,\n                auto_initialize=False,\n                timeout=float(\n                    self.timeout\n                ),\n            ) as client:\n\n                await client.initialize(\n                    timeout=float(\n                        self.timeout\n                    )\n                )\n\n                result = await client.call_tool_mcp(\n                    \"IntugleAgent\",\n                    {\n                        \"question\": question,\n                    },\n                    timeout=float(\n                        self.timeout\n                    ),\n                )\n\n        except Exception as exc:\n            raise ValueError(\n                f\"Failed to call IntugleAgent: {exc}\"\n            ) from exc\n\n        raw_result = self._to_dict(\n            result\n        )\n\n        answer = self._extract_exact_text(\n            raw_result\n        )\n\n        self._cached_request_key = cache_key\n        self._cached_raw_result = raw_result\n        self._cached_answer = answer\n\n        return (\n            raw_result,\n            answer,\n        )\n\n    @staticmethod\n    def _is_error(\n        raw_result: dict[str, Any],\n    ) -> bool:\n        return bool(\n            raw_result.get(\n                \"isError\",\n                raw_result.get(\n                    \"is_error\",\n                    False,\n                ),\n            )\n        )\n\n    @staticmethod\n    def _normalise_email_data(\n        value: Any,\n    ) -> str:\n\n        if value is None:\n            return \"\"\n\n        # Langflow Data object\n        if hasattr(value, \"data\"):\n            try:\n                value = value.data\n            except Exception:\n                pass\n\n        # JSON string fallback\n        if isinstance(value, str):\n            raw = value.strip()\n\n            if not raw:\n                return \"\"\n\n            try:\n                parsed = json.loads(raw)\n\n                if isinstance(parsed, dict):\n                    value = parsed\n                else:\n                    return raw\n\n            except json.JSONDecodeError:\n                return raw\n    \n        if not isinstance(value, dict):\n            raise ValueError(\n                \"Current Email must be a Data/JSON object.\"\n            )\n\n        # Handle Langflow Data wrapper if present\n        nested_data = value.get(\"data\")\n\n        if isinstance(nested_data, dict):\n            value = nested_data\n\n        sender_email = str(\n            value.get(\"sender_email\") or \"\"\n        ).strip()\n\n        sender_name = str(\n            value.get(\"sender_name\") or \"\"\n        ).strip()\n\n        subject = str(\n            value.get(\"subject\") or \"\"\n        ).strip()\n\n        body_text = str(\n            value.get(\"body_text\") or \"\"\n        ).strip()\n\n        if not body_text:\n            raise ValueError(\n                \"Current Email body_text is empty.\"\n            )\n\n        lines = []\n\n        # Keep sender identity because Intugle may need it\n        # for customer/account verification.\n        if sender_name and sender_email:\n            lines.append(\n                f\"From: {sender_name} <{sender_email}>\"\n            )\n\n        elif sender_email:\n            lines.append(\n                f\"From: {sender_email}\"\n            )\n\n        elif sender_name:\n            lines.append(\n                f\"From: {sender_name}\"\n            )\n\n        # Only include subject when one actually exists.\n        if subject:\n            lines.append(\n                f\"Subject: {subject}\"\n            )\n\n        # Separate metadata from actual customer content.\n        if lines:\n            lines.append(\"\")\n\n        lines.append(body_text)\n\n        return \"\\n\".join(lines).strip()\n\n    @staticmethod\n    def _normalise_text(\n        value: Any,\n    ) -> str:\n\n        if isinstance(\n            value,\n            Message,\n        ):\n            return str(\n                value.text or \"\"\n            ).strip()\n\n        if hasattr(\n            value,\n            \"text\",\n        ):\n            return str(\n                value.text or \"\"\n            ).strip()\n\n        return str(\n            value or \"\"\n        ).strip()\n\n    @staticmethod\n    def _normalise_secret(\n        value: Any,\n    ) -> str:\n\n        if value is None:\n            return \"\"\n\n        if hasattr(\n            value,\n            \"get_secret_value\",\n        ):\n            return str(\n                value.get_secret_value()\n                or \"\"\n            ).strip()\n\n        return str(\n            value or \"\"\n        ).strip()\n\n    def _extract_exact_text(\n        self,\n        raw_result: dict[str, Any],\n    ) -> str:\n\n        structured = (\n            raw_result.get(\n                \"structuredContent\"\n            )\n            or raw_result.get(\n                \"structured_content\"\n            )\n        )\n\n        if isinstance(\n            structured,\n            dict,\n        ):\n            structured_result = structured.get(\n                \"result\"\n            )\n\n            text = self._render_value(\n                structured_result\n            )\n\n            if text:\n                return text\n\n        content = raw_result.get(\n            \"content\"\n        ) or []\n\n        if isinstance(\n            content,\n            list,\n        ):\n            parts: list[str] = []\n\n            for item in content:\n                if not isinstance(\n                    item,\n                    dict,\n                ):\n                    continue\n\n                text = item.get(\n                    \"text\"\n                )\n\n                if (\n                    isinstance(\n                        text,\n                        str,\n                    )\n                    and text.strip()\n                ):\n                    parts.append(\n                        self._unwrap_json_text(\n                            text\n                        )\n                    )\n\n                    continue\n\n                item_content = item.get(\n                    \"content\"\n                )\n\n                if (\n                    item_content\n                    is not None\n                ):\n                    rendered = self._render_value(\n                        item_content\n                    )\n\n                    if rendered:\n                        parts.append(\n                            rendered\n                        )\n\n            if parts:\n                return \"\\n\\n\".join(\n                    part\n                    for part in parts\n                    if part\n                ).strip()\n\n        return self._render_value(\n            content\n        )\n\n    def _render_value(\n        self,\n        value: Any,\n    ) -> str:\n\n        if value is None:\n            return \"\"\n\n        if isinstance(\n            value,\n            str,\n        ):\n            return self._unwrap_json_text(\n                value\n            )\n\n        if isinstance(\n            value,\n            list,\n        ):\n            parts = [\n                self._render_value(\n                    item\n                )\n                for item in value\n            ]\n\n            return \"\\n\\n\".join(\n                part\n                for part in parts\n                if part\n            ).strip()\n\n        if isinstance(\n            value,\n            dict,\n        ):\n            item_type = str(\n                value.get(\n                    \"type\"\n                )\n                or \"\"\n            ).strip().lower()\n\n            if item_type in {\n                \"text\",\n                \"markdown\",\n            }:\n                content = value.get(\n                    \"content\"\n                )\n\n                if content is None:\n                    content = value.get(\n                        \"text\"\n                    )\n\n                return self._render_value(\n                    content\n                )\n\n            if (\n                value.get(\n                    \"text\"\n                )\n                is not None\n            ):\n                return self._render_value(\n                    value[\n                        \"text\"\n                    ]\n                )\n\n            if (\n                value.get(\n                    \"content\"\n                )\n                is not None\n            ):\n                return self._render_value(\n                    value[\n                        \"content\"\n                    ]\n                )\n\n            if (\n                value.get(\n                    \"result\"\n                )\n                is not None\n            ):\n                return self._render_value(\n                    value[\n                        \"result\"\n                    ]\n                )\n\n            return json.dumps(\n                value,\n                ensure_ascii=False,\n            )\n\n        return str(\n            value\n        ).strip()\n\n    def _unwrap_json_text(\n        self,\n        value: str,\n    ) -> str:\n\n        raw = str(\n            value or \"\"\n        ).strip()\n\n        if not raw:\n            return \"\"\n\n        if not raw.startswith(\n            (\"{\", \"[\")\n        ):\n            return raw\n\n        try:\n            parsed = json.loads(\n                raw\n            )\n\n        except json.JSONDecodeError:\n            return raw\n\n        return self._render_value(\n            parsed\n        )\n\n    @classmethod\n    def _to_dict(\n        cls,\n        result: Any,\n    ) -> dict[str, Any]:\n\n        if isinstance(\n            result,\n            dict,\n        ):\n            return cls._dump_value(\n                result\n            )\n\n        if hasattr(\n            result,\n            \"model_dump\",\n        ):\n            try:\n                return result.model_dump(\n                    by_alias=True\n                )\n\n            except TypeError:\n                return result.model_dump()\n\n        return {\n            \"content\": cls._dump_value(\n                getattr(\n                    result,\n                    \"content\",\n                    [],\n                )\n            ),\n            \"structuredContent\": cls._dump_value(\n                getattr(\n                    result,\n                    \"structured_content\",\n                    None,\n                )\n            ),\n            \"isError\": bool(\n                getattr(\n                    result,\n                    \"is_error\",\n                    False,\n                )\n            ),\n            \"_meta\": cls._dump_value(\n                getattr(\n                    result,\n                    \"meta\",\n                    None,\n                )\n            ),\n        }\n\n    @classmethod\n    def _dump_value(\n        cls,\n        value: Any,\n    ) -> Any:\n\n        if hasattr(\n            value,\n            \"model_dump\",\n        ):\n            try:\n                return value.model_dump(\n                    by_alias=True\n                )\n\n            except TypeError:\n                return value.model_dump()\n\n        if isinstance(\n            value,\n            list,\n        ):\n            return [\n                cls._dump_value(\n                    item\n                )\n                for item in value\n            ]\n\n        if isinstance(\n            value,\n            dict,\n        ):\n            return {\n                key: cls._dump_value(\n                    item\n                )\n                for key, item\n                in value.items()\n            }\n\n        return value"
+              },
+              "email_data": {
+                "_input_type": "JSONInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Current Email",
+                "dynamic": false,
+                "info": "",
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "email_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "extra_params": {
+                "_input_type": "StrInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "x-extra-params",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "extra_params",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "mcp_api_key": {
+                "_input_type": "SecretStrInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "MCP API Key",
+                "dynamic": false,
+                "info": "",
+                "input_types": [],
+                "load_from_db": false,
+                "name": "mcp_api_key",
+                "override_skip": false,
+                "password": true,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "mcp_url": {
+                "_input_type": "StrInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "MCP URL",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "mcp_url",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "https://app.intugle.ai/mcp"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "timeout": {
+                "_input_type": "IntInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Timeout Seconds",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "timeout",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "int",
+                "value": 300
+              }
+            },
+            "tool_mode": false
+          },
+          "showNode": true,
+          "type": "DirectIntugleMCPCaller"
+        },
+        "dragging": false,
+        "id": "CustomComponent-uy4bF",
+        "measured": {
+          "height": 530,
+          "width": 320
+        },
+        "position": {
+          "x": 860,
+          "y": 300
+        },
+        "selected": false,
+        "type": "genericNode"
+      },
+      {
+        "data": {
+          "id": "CustomComponent-46KIY",
+          "node": {
+            "base_classes": [
+              "JSON"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "An authorized employee reviews the evidence and may approve, edit, reject or escalate the response.",
+            "display_name": "4. Human Review & Approval",
+            "documentation": "",
+            "edited": true,
+            "field_order": [
+              "review_payload",
+              "endpoint_url",
+              "api_key",
+              "api_key_header",
+              "api_key_prefix",
+              "extra_headers",
+              "timeout"
+            ],
+            "frozen": false,
+            "icon": "send",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "53c505f84b56",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "httpx",
+                    "version": "0.28.1"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": "1.11.0"
+                  }
+                ],
+                "total_dependencies": 2
+              },
+              "module": "custom_components.webapp_review_post"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Webapp Response",
+                "group_outputs": false,
+                "hidden": null,
+                "loop_types": null,
+                "method": "send_review",
+                "name": "response",
+                "options": null,
+                "required_inputs": null,
+                "selected": "JSON",
+                "tool_mode": true,
+                "types": [
+                  "JSON"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "_input_type": "SecretStrInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "API Key",
+                "dynamic": false,
+                "info": "Optional API key for the webapp endpoint.",
+                "input_types": [],
+                "load_from_db": false,
+                "name": "api_key",
+                "override_skip": false,
+                "password": true,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "api_key_header": {
+                "_input_type": "StrInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "API Key Header",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "api_key_header",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "Authorization"
+              },
+              "api_key_prefix": {
+                "_input_type": "StrInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "API Key Prefix",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "api_key_prefix",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "Bearer"
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "import json\n\nimport httpx\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import (\n    DataInput,\n    IntInput,\n    Output,\n    SecretStrInput,\n    StrInput,\n)\nfrom lfx.schema.data import Data\n\n\nclass WebappReviewPOST(Component):\n    display_name = \"Webapp Review POST\"\n    description = (\n        \"POSTs the HITL review payload to the webapp \"\n        \"for human review.\"\n    )\n    icon = \"send\"\n    name = \"WebappReviewPOST\"\n\n    inputs = [\n        DataInput(\n            name=\"review_payload\",\n            display_name=\"Review Payload\",\n            required=True,\n        ),\n        StrInput(\n            name=\"endpoint_url\",\n            display_name=\"Webapp Endpoint URL\",\n            info=\"Example: https://your-app.com/api/email-reviews\",\n            required=True,\n        ),\n        SecretStrInput(\n            name=\"api_key\",\n            display_name=\"API Key\",\n            info=\"Optional API key for the webapp endpoint.\",\n            required=False,\n        ),\n        StrInput(\n            name=\"api_key_header\",\n            display_name=\"API Key Header\",\n            value=\"Authorization\",\n            advanced=True,\n        ),\n        StrInput(\n            name=\"api_key_prefix\",\n            display_name=\"API Key Prefix\",\n            value=\"Bearer\",\n            advanced=True,\n        ),\n        StrInput(\n            name=\"extra_headers\",\n            display_name=\"Extra Headers\",\n            info='Optional JSON object. Example: {\"x-source\": \"langflow\"}',\n            value=\"{}\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"timeout\",\n            display_name=\"Timeout\",\n            value=30,\n            advanced=True,\n        ),\n    ]\n\n    outputs = [\n        Output(\n            name=\"response\",\n            display_name=\"Webapp Response\",\n            method=\"send_review\",\n        ),\n    ]\n\n    @staticmethod\n    def _as_dict(value):\n        if isinstance(value, Data):\n            value = value.data\n\n        if isinstance(value, str):\n            try:\n                value = json.loads(value)\n            except json.JSONDecodeError:\n                return {}\n\n        return value if isinstance(value, dict) else {}\n\n    @staticmethod\n    def _secret_value(value):\n        if value is None:\n            return \"\"\n\n        if hasattr(value, \"get_secret_value\"):\n            return value.get_secret_value().strip()\n\n        return str(value).strip()\n\n    def _build_headers(self):\n        headers = {\n            \"Content-Type\": \"application/json\",\n            \"Accept\": \"application/json\",\n        }\n\n        api_key = self._secret_value(\n            self.api_key\n        )\n\n        if api_key:\n            header_name = str(\n                self.api_key_header or \"Authorization\"\n            ).strip()\n\n            prefix = str(\n                self.api_key_prefix or \"\"\n            ).strip()\n\n            if prefix:\n                headers[header_name] = (\n                    f\"{prefix} {api_key}\"\n                )\n            else:\n                headers[header_name] = api_key\n\n        extra_headers_raw = str(\n            self.extra_headers or \"{}\"\n        ).strip()\n\n        if extra_headers_raw:\n            try:\n                extra_headers = json.loads(\n                    extra_headers_raw\n                )\n            except json.JSONDecodeError as exc:\n                raise ValueError(\n                    \"EXTRA_HEADERS_INVALID: \"\n                    \"Extra Headers must be valid JSON.\"\n                ) from exc\n\n            if not isinstance(extra_headers, dict):\n                raise ValueError(\n                    \"EXTRA_HEADERS_INVALID: \"\n                    \"Extra Headers must be a JSON object.\"\n                )\n\n            for key, value in extra_headers.items():\n                headers[str(key)] = str(value)\n\n        return headers\n\n    async def send_review(self) -> Data:\n        payload = self._as_dict(\n            self.review_payload\n        )\n\n        if not payload:\n            raise ValueError(\n                \"REVIEW_PAYLOAD_INVALID: \"\n                \"Review Payload is required.\"\n            )\n\n        endpoint = str(\n            self.endpoint_url or \"\"\n        ).strip()\n\n        if not endpoint:\n            raise ValueError(\n                \"WEBAPP_ENDPOINT_INVALID: \"\n                \"Webapp Endpoint URL is required.\"\n            )\n\n        headers = self._build_headers()\n\n        try:\n            async with httpx.AsyncClient(\n                timeout=float(self.timeout or 30)\n            ) as client:\n\n                response = await client.post(\n                    endpoint,\n                    json=payload,\n                    headers=headers,\n                )\n\n        except httpx.RequestError as exc:\n            raise ValueError(\n                \"WEBAPP_REQUEST_FAILED: \"\n                f\"{str(exc)}\"\n            ) from exc\n\n        response_text = (\n            response.text or \"\"\n        ).strip()\n\n        try:\n            response_body = (\n                response.json()\n                if response_text\n                else {}\n            )\n        except Exception:\n            response_body = response_text\n\n        if not 200 <= response.status_code < 300:\n            raise ValueError(\n                \"WEBAPP_POST_FAILED: \"\n                f\"HTTP {response.status_code} - \"\n                f\"{response_text}\"\n            )\n\n        self.status = (\n            f\"REVIEW_SUBMITTED | \"\n            f\"HTTP {response.status_code}\"\n        )\n\n        return Data(\n            data={\n                \"success\": True,\n                \"status_code\": response.status_code,\n                \"response\": response_body,\n                \"message_id\": payload.get(\n                    \"message_id\"\n                ),\n                \"conversation_id\": payload.get(\n                    \"conversation_id\"\n                ),\n                \"review_status\": payload.get(\n                    \"review_status\"\n                ),\n            }\n        )"
+              },
+              "endpoint_url": {
+                "_input_type": "StrInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Webapp Endpoint URL",
+                "dynamic": false,
+                "info": "Example: https://your-app.com/api/email-reviews",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "endpoint_url",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "https://blush-winking-cytoplasm.ngrok-free.dev/api/email-reviews"
+              },
+              "extra_headers": {
+                "_input_type": "StrInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Extra Headers",
+                "dynamic": false,
+                "info": "Optional JSON object. Example: {\"x-source\": \"langflow\"}",
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "extra_headers",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{}"
+              },
+              "review_payload": {
+                "_input_type": "JSONInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Review Payload",
+                "dynamic": false,
+                "info": "",
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "review_payload",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "timeout": {
+                "_input_type": "IntInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Timeout",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "timeout",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "int",
+                "value": 30
+              }
+            },
+            "tool_mode": false
+          },
+          "showNode": true,
+          "type": "WebappReviewPOST"
+        },
+        "dragging": false,
+        "id": "CustomComponent-46KIY",
+        "measured": {
+          "height": 350,
+          "width": 320
+        },
+        "position": {
+          "x": 1290,
+          "y": 300
+        },
+        "selected": false,
+        "type": "genericNode"
+      },
+      {
+        "data": {
+          "id": "CustomComponent-DemoSendOutcome",
+          "node": {
+            "base_classes": [
+              "JSON"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Only the approved response is sent to the customer, and the final outcome is recorded.",
+            "display_name": "5. Send Reply & Record Outcome",
+            "documentation": "",
+            "edited": true,
+            "field_order": [
+              "review_result"
+            ],
+            "frozen": false,
+            "icon": "send",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "b6c96290c6cb",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.11.0"
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "custom_components.send_result_builder"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Outcome",
+                "group_outputs": false,
+                "hidden": null,
+                "loop_types": null,
+                "method": "build_result",
+                "name": "outcome",
+                "options": null,
+                "required_inputs": null,
+                "selected": "JSON",
+                "tool_mode": true,
+                "types": [
+                  "JSON"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, Output\nfrom lfx.schema.data import Data\n\n\nclass DemoSendOutcome(Component):\n    display_name = \"5. Send Reply & Record Outcome\"\n    description = \"Sends the approved response and records the final outcome.\"\n    icon = \"send\"\n    name = \"DemoSendOutcome\"\n\n    inputs = [\n        DataInput(\n            name=\"review_result\",\n            display_name=\"Approved Response\",\n            required=True,\n        ),\n    ]\n\n    outputs = [\n        Output(\n            name=\"outcome\",\n            display_name=\"Outcome\",\n            method=\"build_result\",\n        ),\n    ]\n\n    def build_result(self) -> Data:\n        value = self.review_result\n        if isinstance(value, Data):\n            value = value.data\n        return Data(data={\"status\": \"sent\", \"review_result\": value})\n"
+              },
+              "review_result": {
+                "_input_type": "JSONInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Approved Response",
+                "dynamic": false,
+                "info": "Human-approved response ready to be sent.",
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "review_result",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              }
+            },
+            "tool_mode": false
+          },
+          "showNode": true,
+          "type": "DemoSendOutcome"
+        },
+        "dragging": false,
+        "id": "CustomComponent-DemoSendOutcome",
+        "position": {
+          "x": 1720,
+          "y": 300
+        },
+        "selected": false,
+        "type": "genericNode"
+      }
+    ],
+    "viewport": {
+      "x": 40,
+      "y": 160,
+      "zoom": 0.62
+    }
+  },
+  "description": "A lean, non-functional business demo showing how an incoming customer email becomes a verified, human-approved response.",
+  "endpoint_name": null,
+  "id": "fivestar-business-demo-flow",
+  "is_component": false,
+  "last_tested_version": "0.11.0",
+  "locked": false,
+  "name": "Five Star - Business Demo Flow",
+  "tags": [
+    "demo",
+    "business",
+    "email",
+    "human-review"
+  ]
+}

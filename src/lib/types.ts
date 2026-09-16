@@ -142,6 +142,7 @@ export interface EmailReviewRow {
   sender_name: string;
   subject: string;
   received_at: string;          // updated to latest email's received_at on each new message
+  primary_intent: string;       // denormalised from latest message's understanding.primary_intent
   final_draft_subject: string;
   final_draft_body: string;
   draft_status: DraftStatus;

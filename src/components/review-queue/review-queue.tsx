@@ -156,6 +156,7 @@ export function ReviewQueue() {
             <TableRow>
               <TableHead className="w-[200px]">Customer</TableHead>
               <TableHead>Subject</TableHead>
+              <TableHead className="w-[160px]">Intent</TableHead>
               <TableHead className="w-[130px]">Draft Status</TableHead>
               <TableHead className="w-[140px]">Status</TableHead>
               <TableHead className="w-[100px]">Assigned</TableHead>
@@ -165,13 +166,13 @@ export function ReviewQueue() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : reviews.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                   No cases found
                 </TableCell>
               </TableRow>
@@ -212,6 +213,11 @@ export function ReviewQueue() {
                           </div>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-xs text-muted-foreground truncate block max-w-[150px]">
+                        {review.primary_intent || "-"}
+                      </span>
                     </TableCell>
                     <TableCell>{draftStatusBadge(review.draft_status)}</TableCell>
                     <TableCell>{reviewStatusBadge(review.review_status)}</TableCell>

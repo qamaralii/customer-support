@@ -83,6 +83,9 @@ export async function POST(request: NextRequest) {
     const escalationReason =
       (evidence as { escalation_reason?: string })?.escalation_reason || null;
     const draftStatus = payload.draft?.draft_status || "READY";
+    // Denormalise primary_intent onto email_reviews for fast queue display
+    const primaryIntent =
+      (understanding as { primary_intent?: string })?.primary_intent || "";
 
     // ── Check if a thread already exists for this conversation_id ──
     const { data: existingThread } = await supabase
@@ -128,6 +131,7 @@ export async function POST(request: NextRequest) {
           review_status: "AWAITING_HUMAN_REVIEW",
           requires_escalation: requiresEscalation,
           escalation_reason: escalationReason,
+          primary_intent: primaryIntent,
           send_error: null,
         })
         .eq("conversation_id", payload.conversation_id);
@@ -172,6 +176,7 @@ export async function POST(request: NextRequest) {
           review_status: "AWAITING_HUMAN_REVIEW",
           requires_escalation: requiresEscalation,
           escalation_reason: escalationReason,
+          primary_intent: primaryIntent,
         });
 
       if (threadError) {
@@ -266,7 +271,7 @@ export async function GET(request: NextRequest) {
       .from("email_reviews")
       .select(
         `id, review_id, conversation_id, sender_email, sender_name, subject,
-         received_at, draft_status, review_status, requires_escalation,
+         received_at, primary_intent, draft_status, review_status, requires_escalation,
          assigned_to, assigned_at, reviewed_by, reviewed_at,
          sent_at, send_error, created_at, updated_at, escalation_reason,
          message_count:email_messages(count)`,
